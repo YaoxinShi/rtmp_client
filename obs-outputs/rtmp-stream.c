@@ -154,7 +154,7 @@ static void rtmp_stream_destroy(void *data)
 	bfree(stream);
 }
 
-static void *rtmp_stream_create(/*obs_data_t *settings, obs_output_t *output*/)
+void *rtmp_stream_create(/*obs_data_t *settings, obs_output_t *output*/)
 {
 	struct rtmp_stream *stream = bzalloc(sizeof(struct rtmp_stream));
 #if OBS
@@ -704,7 +704,7 @@ static bool send_audio_header(struct rtmp_stream *stream, size_t idx,
 	obs_output_t *context = stream->output;
 	obs_encoder_t *aencoder = obs_output_get_audio_encoder(context, idx);
 #endif
-	uint8_t *header;
+	uint8_t *header = NULL;
 
 	struct encoder_packet packet = {.type = OBS_ENCODER_AUDIO,
 					.timebase_den = 1};
@@ -1022,6 +1022,7 @@ static int try_connect(struct rtmp_stream *stream)
 		const char *encoder_name = "audio_encoder";
 #endif
 		RTMP_AddStream(&stream->rtmp, encoder_name);
+		break;
 	}
 
 	stream->rtmp.m_outChunkSize = 4096;
@@ -1084,10 +1085,10 @@ static bool init_connect(struct rtmp_stream *stream)
 	dstr_depad(&stream->path);
 	dstr_depad(&stream->key);
 #else
-	dstr_copy(&stream->path, "127.0.0.1");
-	dstr_copy(&stream->key, "todo");
-	dstr_copy(&stream->username, "todo");
-	dstr_copy(&stream->password, "todo");
+	dstr_copy(&stream->path, "rtmp://localhost:1935/live");
+	dstr_copy(&stream->key, "");
+	dstr_copy(&stream->username, "");
+	dstr_copy(&stream->password, "");
 	dstr_depad(&stream->path);
 	dstr_depad(&stream->key);
 #endif
@@ -1127,6 +1128,9 @@ static bool init_connect(struct rtmp_stream *stream)
 
 	obs_data_release(vsettings);
 	obs_data_release(asettings);
+#else
+	drop_p = 900;
+	drop_b = 700;
 #endif
 
 	if (drop_p < (drop_b + 200))
@@ -1179,7 +1183,7 @@ static void *connect_thread(void *data)
 	return NULL;
 }
 
-static bool rtmp_stream_start(void *data)
+bool rtmp_stream_start(void *data)
 {
 	struct rtmp_stream *stream = data;
 

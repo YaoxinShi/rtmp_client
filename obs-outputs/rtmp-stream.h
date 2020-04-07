@@ -136,3 +136,6 @@ struct rtmp_stream {
 #ifdef _WIN32
 void *socket_thread_windows(void *data);
 #endif
+
+bool rtmp_stream_start(void* data);
+void* rtmp_stream_create();

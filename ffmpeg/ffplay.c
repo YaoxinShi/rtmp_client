@@ -60,6 +60,9 @@
 
 #include <assert.h>
 
+#include "..\obs-outputs\rtmp-stream.h"
+struct rtmp_stream* pStream;
+
 const char program_name[] = "ffplay";
 const int program_birth_year = 2003;
 
@@ -3755,6 +3758,21 @@ int main(int argc, char **argv)
         }
     }
 
+    //start RTMP thread
+    pStream = rtmp_stream_create();
+    if (pStream == NULL)
+    {
+        av_log(NULL, AV_LOG_FATAL, "Failed to initialize RTMP!\n");
+        do_exit(NULL);
+    }
+
+    if (!rtmp_stream_start(pStream))
+    {
+        av_log(NULL, AV_LOG_FATAL, "Failed to initialize RTMP!\n");
+        do_exit(NULL);
+    }
+
+    //start decode thread
     is = stream_open(input_filename, file_iformat);
     if (!is) {
         av_log(NULL, AV_LOG_FATAL, "Failed to initialize VideoState!\n");

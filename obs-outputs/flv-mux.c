@@ -69,14 +69,14 @@ static bool build_flv_meta_data(/*obs_output_t *context,*/ uint8_t **output,
 	//obs_encoder_t *aencoder = obs_output_get_audio_encoder(context, a_idx);
 	//video_t *video = obs_encoder_video(vencoder);
 	//audio_t *audio = obs_encoder_audio(aencoder);
-	double video_fps = 60.0;
-	double video_bps = 6000000.0;
+	double video_fps = 30.0;
+	double video_bps = 2500.0;
 	double video_width = 1920.0;
 	double video_height = 1080.0;
 
-	double audio_channel = 1.0;
-	double audio_bps = 44100;
-	double audio_sample = 44100;
+	double audio_channel = 2.0;
+	double audio_bps = 160.0;
+	double audio_sample = 44100.0;
 
 	char buf[4096];
 	char *enc = buf;
