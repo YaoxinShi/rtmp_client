@@ -16,6 +16,15 @@
     <Filter Include="ffmpeg">
       <UniqueIdentifier>{43c34c8f-4bc1-43e8-a8a2-06692556aadf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="obs-outputs">
+      <UniqueIdentifier>{5b7bb463-a80d-429c-a994-81fb5d35d9dd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obs-outputs\librtmp">
+      <UniqueIdentifier>{1ebf4133-fa9c-449c-93b9-e5a15c80f372}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="obs-outputs\util">
+      <UniqueIdentifier>{20dae877-b15c-444d-95d8-048ce13e0150}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ffmpeg\ffplay.c">
@@ -23,6 +32,90 @@
     </ClCompile>
     <ClCompile Include="ffmpeg\cmdutils.c">
       <Filter>ffmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\rtmp-stream.c">
+      <Filter>obs-outputs</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\rtmp-windows.c">
+      <Filter>obs-outputs</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\librtmp\amf.c">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\librtmp\cencode.c">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\librtmp\hashswf.c">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\librtmp\log.c">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\librtmp\md5.c">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\librtmp\parseurl.c">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\librtmp\rtmp.c">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\array-serializer.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\base.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\bmem.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\cf-lexer.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\cf-parser.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\config-file.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\crc32.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\dstr.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\file-serializer.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\lexer.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\pipe-windows.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\platform.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\platform-windows.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\profiler.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\text-lookup.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\threading-windows.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\util\utf8.c">
+      <Filter>obs-outputs\util</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\flv-mux.c">
+      <Filter>obs-outputs</Filter>
+    </ClCompile>
+    <ClCompile Include="obs-outputs\net-if.c">
+      <Filter>obs-outputs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -35,5 +128,160 @@
     <ClInclude Include="ffmpeg\va_copy.h">
       <Filter>ffmpeg</Filter>
     </ClInclude>
+    <ClInclude Include="obs-outputs\rtmp-helpers.h">
+      <Filter>obs-outputs</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\rtmp-stream.h">
+      <Filter>obs-outputs</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\amf.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\bytes.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\cencode.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\dh.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\dhgroups.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\handshake.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\http.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\log.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\md5.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\rtmp.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\librtmp\rtmp_sys.h">
+      <Filter>obs-outputs\librtmp</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\AlignedNew.hpp">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\array-serializer.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\base.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\bmem.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\c99defs.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\cf-lexer.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\cf-parser.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\circlebuf.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\config-file.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\crc32.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\darray.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\dstr.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\dstr.hpp">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\file-serializer.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\lexer.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\pipe.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\platform.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\profiler.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\profiler.hpp">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\serializer.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\text-lookup.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\threading.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\threading-windows.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\utf8.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\util.hpp">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\util_uint128.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\vc\vc_inttypes.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\vc\vc_stdbool.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\vc\vc_stdint.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\windows\ComPtr.hpp">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\windows\CoTaskMemPtr.hpp">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\windows\HRError.hpp">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\windows\WinHandle.hpp">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\windows\win-registry.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\util\windows\win-version.h">
+      <Filter>obs-outputs\util</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\flv-mux.h">
+      <Filter>obs-outputs</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\net-if.h">
+      <Filter>obs-outputs</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="obs-outputs\util\platform-cocoa.m">
+      <Filter>obs-outputs\util</Filter>
+    </None>
   </ItemGroup>
 </Project>

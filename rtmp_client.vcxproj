@@ -21,11 +21,92 @@
   <ItemGroup>
     <ClCompile Include="ffmpeg\cmdutils.c" />
     <ClCompile Include="ffmpeg\ffplay.c" />
+    <ClCompile Include="obs-outputs\flv-mux.c" />
+    <ClCompile Include="obs-outputs\librtmp\amf.c" />
+    <ClCompile Include="obs-outputs\librtmp\cencode.c" />
+    <ClCompile Include="obs-outputs\librtmp\hashswf.c" />
+    <ClCompile Include="obs-outputs\librtmp\log.c" />
+    <ClCompile Include="obs-outputs\librtmp\md5.c" />
+    <ClCompile Include="obs-outputs\librtmp\parseurl.c" />
+    <ClCompile Include="obs-outputs\librtmp\rtmp.c" />
+    <ClCompile Include="obs-outputs\net-if.c" />
+    <ClCompile Include="obs-outputs\rtmp-stream.c" />
+    <ClCompile Include="obs-outputs\rtmp-windows.c" />
+    <ClCompile Include="obs-outputs\util\array-serializer.c" />
+    <ClCompile Include="obs-outputs\util\base.c" />
+    <ClCompile Include="obs-outputs\util\bmem.c" />
+    <ClCompile Include="obs-outputs\util\cf-lexer.c" />
+    <ClCompile Include="obs-outputs\util\cf-parser.c" />
+    <ClCompile Include="obs-outputs\util\config-file.c" />
+    <ClCompile Include="obs-outputs\util\crc32.c" />
+    <ClCompile Include="obs-outputs\util\dstr.c" />
+    <ClCompile Include="obs-outputs\util\file-serializer.c" />
+    <ClCompile Include="obs-outputs\util\lexer.c" />
+    <ClCompile Include="obs-outputs\util\pipe-windows.c" />
+    <ClCompile Include="obs-outputs\util\platform-windows.c" />
+    <ClCompile Include="obs-outputs\util\platform.c" />
+    <ClCompile Include="obs-outputs\util\profiler.c" />
+    <ClCompile Include="obs-outputs\util\text-lookup.c" />
+    <ClCompile Include="obs-outputs\util\threading-windows.c" />
+    <ClCompile Include="obs-outputs\util\utf8.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ffmpeg\cmdutils.h" />
     <ClInclude Include="ffmpeg\config.h" />
     <ClInclude Include="ffmpeg\va_copy.h" />
+    <ClInclude Include="obs-outputs\flv-mux.h" />
+    <ClInclude Include="obs-outputs\librtmp\amf.h" />
+    <ClInclude Include="obs-outputs\librtmp\bytes.h" />
+    <ClInclude Include="obs-outputs\librtmp\cencode.h" />
+    <ClInclude Include="obs-outputs\librtmp\dh.h" />
+    <ClInclude Include="obs-outputs\librtmp\dhgroups.h" />
+    <ClInclude Include="obs-outputs\librtmp\handshake.h" />
+    <ClInclude Include="obs-outputs\librtmp\http.h" />
+    <ClInclude Include="obs-outputs\librtmp\log.h" />
+    <ClInclude Include="obs-outputs\librtmp\md5.h" />
+    <ClInclude Include="obs-outputs\librtmp\rtmp.h" />
+    <ClInclude Include="obs-outputs\librtmp\rtmp_sys.h" />
+    <ClInclude Include="obs-outputs\net-if.h" />
+    <ClInclude Include="obs-outputs\rtmp-helpers.h" />
+    <ClInclude Include="obs-outputs\rtmp-stream.h" />
+    <ClInclude Include="obs-outputs\util\AlignedNew.hpp" />
+    <ClInclude Include="obs-outputs\util\array-serializer.h" />
+    <ClInclude Include="obs-outputs\util\base.h" />
+    <ClInclude Include="obs-outputs\util\bmem.h" />
+    <ClInclude Include="obs-outputs\util\c99defs.h" />
+    <ClInclude Include="obs-outputs\util\cf-lexer.h" />
+    <ClInclude Include="obs-outputs\util\cf-parser.h" />
+    <ClInclude Include="obs-outputs\util\circlebuf.h" />
+    <ClInclude Include="obs-outputs\util\config-file.h" />
+    <ClInclude Include="obs-outputs\util\crc32.h" />
+    <ClInclude Include="obs-outputs\util\darray.h" />
+    <ClInclude Include="obs-outputs\util\dstr.h" />
+    <ClInclude Include="obs-outputs\util\dstr.hpp" />
+    <ClInclude Include="obs-outputs\util\file-serializer.h" />
+    <ClInclude Include="obs-outputs\util\lexer.h" />
+    <ClInclude Include="obs-outputs\util\pipe.h" />
+    <ClInclude Include="obs-outputs\util\platform.h" />
+    <ClInclude Include="obs-outputs\util\profiler.h" />
+    <ClInclude Include="obs-outputs\util\profiler.hpp" />
+    <ClInclude Include="obs-outputs\util\serializer.h" />
+    <ClInclude Include="obs-outputs\util\text-lookup.h" />
+    <ClInclude Include="obs-outputs\util\threading-windows.h" />
+    <ClInclude Include="obs-outputs\util\threading.h" />
+    <ClInclude Include="obs-outputs\util\utf8.h" />
+    <ClInclude Include="obs-outputs\util\util.hpp" />
+    <ClInclude Include="obs-outputs\util\util_uint128.h" />
+    <ClInclude Include="obs-outputs\util\vc\vc_inttypes.h" />
+    <ClInclude Include="obs-outputs\util\vc\vc_stdbool.h" />
+    <ClInclude Include="obs-outputs\util\vc\vc_stdint.h" />
+    <ClInclude Include="obs-outputs\util\windows\ComPtr.hpp" />
+    <ClInclude Include="obs-outputs\util\windows\CoTaskMemPtr.hpp" />
+    <ClInclude Include="obs-outputs\util\windows\HRError.hpp" />
+    <ClInclude Include="obs-outputs\util\windows\win-registry.h" />
+    <ClInclude Include="obs-outputs\util\windows\win-version.h" />
+    <ClInclude Include="obs-outputs\util\windows\WinHandle.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="obs-outputs\util\platform-cocoa.m" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -97,15 +178,15 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;USE_MBEDTLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>ffmpeg\include;SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>ffmpeg\include;SDL2\include;obs-deps\x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>.\ffmpeg\lib\x86\avcodec.lib;.\ffmpeg\lib\x86\avdevice.lib;.\ffmpeg\lib\x86\avfilter.lib;.\ffmpeg\lib\x86\avformat.lib;.\ffmpeg\lib\x86\avutil.lib;.\ffmpeg\lib\x86\postproc.lib;.\ffmpeg\lib\x86\swresample.lib;.\ffmpeg\lib\x86\swscale.lib;.\SDL2\lib\x86\SDL2.lib;.\SDL2\lib\x86\SDL2main.lib;.\SDL2\lib\x86\SDL2test.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>.\ffmpeg\lib\x86\avcodec.lib;.\ffmpeg\lib\x86\avdevice.lib;.\ffmpeg\lib\x86\avfilter.lib;.\ffmpeg\lib\x86\avformat.lib;.\ffmpeg\lib\x86\avutil.lib;.\ffmpeg\lib\x86\postproc.lib;.\ffmpeg\lib\x86\swresample.lib;.\ffmpeg\lib\x86\swscale.lib;.\SDL2\lib\x86\SDL2.lib;.\SDL2\lib\x86\SDL2main.lib;.\SDL2\lib\x86\SDL2test.lib;.\obs-deps\x86\bin\mbedcrypto.lib;.\obs-deps\x86\bin\mbedtls.lib;.\obs-deps\x86\bin\mbedx509.lib;.\obs-deps\x86\bin\zlib.lib;.\obs-deps\x86\bin\w32-pthreads.lib;ws2_32.lib;winmm.lib;Iphlpapi.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>
       </ImageHasSafeExceptionHandlers>
     </Link>
@@ -119,15 +200,15 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;USE_MBEDTLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>ffmpeg\include;SDL2\include</AdditionalIncludeDirectories>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalIncludeDirectories>ffmpeg\include;SDL2\include;obs-deps\x64\include</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>.\ffmpeg\lib\x64\avcodec.lib;.\ffmpeg\lib\x64\avdevice.lib;.\ffmpeg\lib\x64\avfilter.lib;.\ffmpeg\lib\x64\avformat.lib;.\ffmpeg\lib\x64\avutil.lib;.\ffmpeg\lib\x64\postproc.lib;.\ffmpeg\lib\x64\swresample.lib;.\ffmpeg\lib\x64\swscale.lib;.\SDL2\lib\x64\SDL2.lib;.\SDL2\lib\x64\SDL2main.lib;.\SDL2\lib\x64\SDL2test.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>.\ffmpeg\lib\x64\avcodec.lib;.\ffmpeg\lib\x64\avdevice.lib;.\ffmpeg\lib\x64\avfilter.lib;.\ffmpeg\lib\x64\avformat.lib;.\ffmpeg\lib\x64\avutil.lib;.\ffmpeg\lib\x64\postproc.lib;.\ffmpeg\lib\x64\swresample.lib;.\ffmpeg\lib\x64\swscale.lib;.\SDL2\lib\x64\SDL2.lib;.\SDL2\lib\x64\SDL2main.lib;.\SDL2\lib\x64\SDL2test.lib;.\obs-deps\x64\bin\mbedcrypto.lib;.\obs-deps\x64\bin\mbedtls.lib;.\obs-deps\x64\bin\mbedx509.lib;.\obs-deps\x64\bin\zlib.lib;.\obs-deps\x64\bin\w32-pthreads.lib;ws2_32.lib;winmm.lib;Iphlpapi.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -138,7 +219,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;USE_MBEDTLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>ffmpeg\include;SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -159,17 +240,17 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;USE_MBEDTLS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>ffmpeg\include;SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>ffmpeg\include;SDL2\include;obs-deps\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>.\ffmpeg\lib\x64\avcodec.lib;.\ffmpeg\lib\x64\avdevice.lib;.\ffmpeg\lib\x64\avfilter.lib;.\ffmpeg\lib\x64\avformat.lib;.\ffmpeg\lib\x64\avutil.lib;.\ffmpeg\lib\x64\postproc.lib;.\ffmpeg\lib\x64\swresample.lib;.\ffmpeg\lib\x64\swscale.lib;.\SDL2\lib\x64\SDL2.lib;.\SDL2\lib\x64\SDL2main.lib;.\SDL2\lib\x64\SDL2test.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>.\ffmpeg\lib\x64\avcodec.lib;.\ffmpeg\lib\x64\avdevice.lib;.\ffmpeg\lib\x64\avfilter.lib;.\ffmpeg\lib\x64\avformat.lib;.\ffmpeg\lib\x64\avutil.lib;.\ffmpeg\lib\x64\postproc.lib;.\ffmpeg\lib\x64\swresample.lib;.\ffmpeg\lib\x64\swscale.lib;.\SDL2\lib\x64\SDL2.lib;.\SDL2\lib\x64\SDL2main.lib;.\SDL2\lib\x64\SDL2test.lib;.\obs-deps\x64\bin\mbedcrypto.lib;.\obs-deps\x64\bin\mbedtls.lib;.\obs-deps\x64\bin\mbedx509.lib;.\obs-deps\x64\bin\zlib.lib;.\obs-deps\x64\bin\w32-pthreads.lib;ws2_32.lib;winmm.lib;Iphlpapi.lib;crypt32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
