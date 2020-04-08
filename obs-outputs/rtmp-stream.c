@@ -1502,6 +1502,13 @@ void rtmp_stream_data(void *data, struct encoder_packet *packet)
 		return;
 	}
 
+	{
+		unsigned char* p = (unsigned char*)packet->data;
+		blog(LOG_ERROR, "=== %s data(size=%d, dts=%d): %02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x\n",
+			packet->type == OBS_ENCODER_VIDEO ? "video" : "audio", packet->size, packet->dts,
+			p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+	}
+
 	if (packet->type == OBS_ENCODER_VIDEO) {
 		if (!stream->got_first_video) {
 			stream->start_dts_offset =

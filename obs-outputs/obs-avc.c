@@ -138,9 +138,9 @@ void obs_parse_avc_packet(struct encoder_packet *avc_packet,
 	struct serializer s;
 	long ref = 1;
 
-	unsigned char *p = (unsigned char *)src->data;
+	/*unsigned char *p = (unsigned char *)src->data;
 	blog(LOG_ERROR, "=== data(size=%d): %02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x", src->size,
-		p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+		p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);*/
 
 	array_output_serializer_init(&s, &output);
 	*avc_packet = *src;
