@@ -16,6 +16,7 @@
 ******************************************************************************/
 
 #include "rtmp-stream.h"
+#include "obs-avc.h"
 
 #ifndef SEC_TO_NSEC
 #define SEC_TO_NSEC 1000000000ULL
@@ -45,6 +46,20 @@
 #define OBS_OUTPUT_UNSUPPORTED -6
 #define OBS_OUTPUT_NO_SPACE -7
 #define OBS_OUTPUT_ENCODE_ERROR -8
+
+void obs_encoder_packet_ref(struct encoder_packet *dst,
+			    struct encoder_packet *src)
+{
+	if (!src)
+		return;
+
+	if (src->data) {
+		long *p_refs = ((long *)src->data) - 1;
+		os_atomic_inc_long(p_refs);
+	}
+
+	*dst = *src;
+}
 
 static const char *rtmp_stream_getname(void *unused)
 {
@@ -703,8 +718,10 @@ static bool send_audio_header(struct rtmp_stream *stream, size_t idx,
 #if OBS
 	obs_output_t *context = stream->output;
 	obs_encoder_t *aencoder = obs_output_get_audio_encoder(context, idx);
-#endif
 	uint8_t *header = NULL;
+#else
+	uint8_t header[16];
+#endif
 
 	struct encoder_packet packet = {.type = OBS_ENCODER_AUDIO,
 					.timebase_den = 1};
@@ -716,6 +733,15 @@ static bool send_audio_header(struct rtmp_stream *stream, size_t idx,
 	}
 
 	obs_encoder_get_extra_data(aencoder, &header, &packet.size);
+#else
+	//for AAC, it is two bytes: 0x12, 0x10. And only send onece
+	if (idx >= 1) {
+		*next = false;
+		return true;
+	}
+	header[0] = 0x12;
+	header[1] = 0x10;
+	packet.size = 2;
 #endif
 	packet.data = bmemdup(header, packet.size);
 	return send_packet(stream, &packet, true, idx) >= 0;
@@ -1460,7 +1486,7 @@ static bool add_video_packet(struct rtmp_stream *stream,
 	return add_packet(stream, packet);
 }
 
-static void rtmp_stream_data(void *data, struct encoder_packet *packet)
+void rtmp_stream_data(void *data, struct encoder_packet *packet)
 {
 	struct rtmp_stream *stream = data;
 	struct encoder_packet new_packet;
@@ -1483,13 +1509,9 @@ static void rtmp_stream_data(void *data, struct encoder_packet *packet)
 			stream->got_first_video = true;
 		}
 
-#if OBS
 		obs_parse_avc_packet(&new_packet, packet);
-#endif
 	} else {
-#if OBS
 		obs_encoder_packet_ref(&new_packet, packet);
-#endif
 	}
 
 	pthread_mutex_lock(&stream->packets_mutex);

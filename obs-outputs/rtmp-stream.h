@@ -139,3 +139,4 @@ void *socket_thread_windows(void *data);
 
 bool rtmp_stream_start(void* data);
 void* rtmp_stream_create();
+void rtmp_stream_data(void* data, struct encoder_packet* packet);

@@ -62,6 +62,8 @@
 
 #include "..\obs-outputs\rtmp-stream.h"
 struct rtmp_stream* pStream;
+unsigned char temp_bit_stream[2][1024 * 1024];
+struct encoder_packet one_packet[2];
 
 const char program_name[] = "ffplay";
 const int program_birth_year = 2003;
@@ -406,6 +408,65 @@ static int opt_add_vfilter(void *optctx, const char *opt, const char *arg)
     return 0;
 }
 #endif
+
+static inline
+void convert_packet(AVPacket* in, AVRational timebase, bool isVideo, struct encoder_packet * out)
+{
+    if ((in == NULL) || (out == NULL))
+        return;
+
+    memset(out, 0, sizeof(struct encoder_packet));
+
+    assert(in->size < 1024*1024);
+    memcpy(&temp_bit_stream[isVideo][0], in->data, in->size);
+    out->data = &temp_bit_stream[isVideo][0];
+    out->size = in->size;
+
+    // for video data, ffmpeg remove start_code_prefix_one_3bytes (00 00 01) and add 4-byte data size (exclude this 4 bytes)
+    // FFMPEG:
+    //     4 bytes size (exclude itself) | nal_ref_idc&nal_unit_type | RBSP
+    // H.264 NAL unit: (also for RTMP)
+    //     00 00 01                      | nal_ref_idc&nal_unit_type | RBSP
+    // So here we add 000001 back
+    // 6(SEI), 5(I-slice); 1 (P-slice); 1 (P-slice)...
+    if (isVideo)
+    {
+        unsigned char* curr_pos = out->data;
+        int size;
+        while (curr_pos < (out->data + out->size))
+        {
+            size = (curr_pos[0] << 24) | (curr_pos[1] << 16) | (curr_pos[2] << 8) | curr_pos[3];
+            curr_pos[0] = 0x00;
+            curr_pos[1] = 0x00;
+            curr_pos[2] = 0x00;
+            curr_pos[3] = 0x01;
+            curr_pos += (size + 4);
+        }
+    }
+
+    out->timebase_num = 1;
+    if (isVideo)
+    {
+        out->type = OBS_ENCODER_VIDEO;
+        out->timebase_den = 30;
+    }
+    else
+    {
+        out->type = OBS_ENCODER_AUDIO;
+        out->timebase_den = 44100;
+    }
+
+    // dts - Decoding Time Stamp
+    // pts - Presentation Time Stamp
+    // In ffmpeg, dts is in unit of (ic->streams[x]->time_base.Numerator / ic->streams[x]->time_base.Denominator) seconds
+    // In OBS, dts is in unit of (1/fps) seconds
+    // So, obs_dts = ffmpeg_dts * (ffmpeg_timebase.num/ffmpeg_timebase.den) / (obs_timebase.num/obs_timebase.den)
+    out->dts = in->dts * timebase.num * out->timebase_den / timebase.den / out->timebase_num; 
+    out->pts = in->pts * timebase.num * out->timebase_den / timebase.den / out->timebase_num; 
+
+    out->dts_usec = out->dts * 1000000 / out->timebase_den;
+
+}
 
 static inline
 int cmp_audio_fmts(enum AVSampleFormat fmt1, int64_t channel_count1,
@@ -3039,10 +3100,14 @@ static int read_thread(void *arg)
         if (pkt->stream_index == is->audio_stream && pkt_in_play_range) {
             packet_queue_put(&is->audioq, pkt);
             //get a audio packet
+            convert_packet(pkt, ic->streams[pkt->stream_index]->time_base, false, &one_packet[0]);
+            rtmp_stream_data(pStream, &one_packet[0]);
         } else if (pkt->stream_index == is->video_stream && pkt_in_play_range
                    && !(is->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
-            packet_queue_put(&is->videoq, pkt);
+            packet_queue_put(&is->videoq, pkt, true);
             //get a video packet
+            convert_packet(pkt, ic->streams[pkt->stream_index]->time_base, true, &one_packet[1]);
+            rtmp_stream_data(pStream, &one_packet[1]);
         } else if (pkt->stream_index == is->subtitle_stream && pkt_in_play_range) {
             packet_queue_put(&is->subtitleq, pkt);
         } else {

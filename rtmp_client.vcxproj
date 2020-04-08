@@ -30,6 +30,7 @@
     <ClCompile Include="obs-outputs\librtmp\parseurl.c" />
     <ClCompile Include="obs-outputs\librtmp\rtmp.c" />
     <ClCompile Include="obs-outputs\net-if.c" />
+    <ClCompile Include="obs-outputs\obs-avc.c" />
     <ClCompile Include="obs-outputs\rtmp-stream.c" />
     <ClCompile Include="obs-outputs\rtmp-windows.c" />
     <ClCompile Include="obs-outputs\util\array-serializer.c" />
@@ -67,6 +68,7 @@
     <ClInclude Include="obs-outputs\librtmp\rtmp.h" />
     <ClInclude Include="obs-outputs\librtmp\rtmp_sys.h" />
     <ClInclude Include="obs-outputs\net-if.h" />
+    <ClInclude Include="obs-outputs\obs-avc.h" />
     <ClInclude Include="obs-outputs\rtmp-helpers.h" />
     <ClInclude Include="obs-outputs\rtmp-stream.h" />
     <ClInclude Include="obs-outputs\util\AlignedNew.hpp" />

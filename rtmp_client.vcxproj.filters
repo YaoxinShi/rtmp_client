@@ -117,6 +117,9 @@
     <ClCompile Include="obs-outputs\net-if.c">
       <Filter>obs-outputs</Filter>
     </ClCompile>
+    <ClCompile Include="obs-outputs\obs-avc.c">
+      <Filter>obs-outputs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ffmpeg\config.h">
@@ -276,6 +279,9 @@
       <Filter>obs-outputs</Filter>
     </ClInclude>
     <ClInclude Include="obs-outputs\net-if.h">
+      <Filter>obs-outputs</Filter>
+    </ClInclude>
+    <ClInclude Include="obs-outputs\obs-avc.h">
       <Filter>obs-outputs</Filter>
     </ClInclude>
   </ItemGroup>
