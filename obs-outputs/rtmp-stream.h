@@ -140,3 +140,7 @@ void *socket_thread_windows(void *data);
 bool rtmp_stream_start(void* data);
 void* rtmp_stream_create();
 void rtmp_stream_data(void* data, struct encoder_packet* packet);
+
+void obs_encoder_packet_create_instance(struct encoder_packet* dst, unsigned char * data, int size);
+void obs_encoder_packet_ref(struct encoder_packet* dst, struct encoder_packet* src);
+void obs_encoder_packet_release(struct encoder_packet* pkt);

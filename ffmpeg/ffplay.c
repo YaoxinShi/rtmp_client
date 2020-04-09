@@ -62,7 +62,6 @@
 
 #include "..\obs-outputs\rtmp-stream.h"
 struct rtmp_stream* pStream;
-unsigned char temp_bit_stream[2][1024 * 1024];
 struct encoder_packet one_packet[2];
 
 const char program_name[] = "ffplay";
@@ -415,12 +414,7 @@ void convert_packet(AVPacket* in, AVRational timebase, bool isVideo, struct enco
     if ((in == NULL) || (out == NULL))
         return;
 
-    memset(out, 0, sizeof(struct encoder_packet));
-
-    assert(in->size < 1024*1024);
-    memcpy(&temp_bit_stream[isVideo][0], in->data, in->size);
-    out->data = &temp_bit_stream[isVideo][0];
-    out->size = in->size;
+    obs_encoder_packet_create_instance(out, in->data, in->size);
 
     // for video data, ffmpeg remove start_code_prefix_one_3bytes (00 00 01) and add 4-byte data size (exclude this 4 bytes)
     // FFMPEG:
@@ -428,7 +422,18 @@ void convert_packet(AVPacket* in, AVRational timebase, bool isVideo, struct enco
     // H.264 NAL unit: (also for RTMP)
     //     00 00 01                      | nal_ref_idc&nal_unit_type | RBSP
     // So here we add 000001 back
-    // 6(SEI), 5(I-slice); 1 (P-slice); 1 (P-slice)...
+
+    //For mp4 file, the packages are:
+    //  6(SEI), 5(I-slice)
+    //  1(P-slice)
+    //  1(P-slice)
+    //  ......
+    //For flv file, the packages are:
+    //  9(AU delimiter), 7(SPS), 8(PPS), 6(SEI), 5(I-slice)
+    //  9(AU delimiter), 8(PPS), 6(SEI), 1(P-slice)
+    //  9(AU delimiter), 8(PPS), 6(SEI), 1(P-slice)
+    //  ......
+
     if (isVideo)
     {
         unsigned char* curr_pos = out->data;
@@ -463,9 +468,13 @@ void convert_packet(AVPacket* in, AVRational timebase, bool isVideo, struct enco
     // So, obs_dts = ffmpeg_dts * (ffmpeg_timebase.num/ffmpeg_timebase.den) / (obs_timebase.num/obs_timebase.den)
     out->dts = in->dts * timebase.num * out->timebase_den / timebase.den / out->timebase_num; 
     out->pts = in->pts * timebase.num * out->timebase_den / timebase.den / out->timebase_num; 
-
     out->dts_usec = out->dts * 1000000 / out->timebase_den;
 
+    out->drop_priority = 0; //not used
+    out->keyframe = 0; //set later based on nal_unit_type
+    out->priority = 0; //not used
+    out->sys_dts_usec = 0; //not used
+    out->track_idx = 0; //only one audio track
 }
 
 static inline

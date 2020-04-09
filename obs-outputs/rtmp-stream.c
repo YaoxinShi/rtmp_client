@@ -47,6 +47,19 @@
 #define OBS_OUTPUT_NO_SPACE -7
 #define OBS_OUTPUT_ENCODE_ERROR -8
 
+void obs_encoder_packet_create_instance(struct encoder_packet *dst,
+					unsigned char * data, int size)
+{
+	long *p_refs;
+
+	//*dst = *src;
+	p_refs = bmalloc(size + sizeof(long));
+	dst->data = (void *)(p_refs + 1);
+	dst->size = size;
+	*p_refs = 1;
+	memcpy(dst->data, data, size);
+}
+
 void obs_encoder_packet_ref(struct encoder_packet *dst,
 			    struct encoder_packet *src)
 {
@@ -59,6 +72,20 @@ void obs_encoder_packet_ref(struct encoder_packet *dst,
 	}
 
 	*dst = *src;
+}
+
+void obs_encoder_packet_release(struct encoder_packet *pkt)
+{
+	if (!pkt)
+		return;
+
+	if (pkt->data) {
+		long *p_refs = ((long *)pkt->data) - 1;
+		if (os_atomic_dec_long(p_refs) == 0)
+			bfree(p_refs);
+	}
+
+	memset(pkt, 0, sizeof(struct encoder_packet));
 }
 
 static const char *rtmp_stream_getname(void *unused)
@@ -90,9 +117,7 @@ static inline void free_packets(struct rtmp_stream *stream)
 	while (stream->packets.size) {
 		struct encoder_packet packet;
 		circlebuf_pop_front(&stream->packets, &packet, sizeof(packet));
-#if OBS
 		obs_encoder_packet_release(&packet);
-#endif
 	}
 	pthread_mutex_unlock(&stream->packets_mutex);
 }
@@ -466,10 +491,8 @@ static int send_packet(struct rtmp_stream *stream,
 
 	if (is_header)
 		bfree(packet->data);
-#if OBS
 	else
 		obs_encoder_packet_release(packet);
-#endif
 
 	stream->total_bytes_sent += size;
 	return ret;
@@ -609,9 +632,7 @@ static void *send_thread(void *data)
 
 		if (stopping(stream)) {
 			if (can_shutdown_stream(stream, &packet)) {
-#if OBS
 				obs_encoder_packet_release(&packet);
-#endif
 				break;
 			}
 		}
@@ -1111,6 +1132,7 @@ static bool init_connect(struct rtmp_stream *stream)
 	dstr_depad(&stream->path);
 	dstr_depad(&stream->key);
 #else
+	//todo: remove hardcode: server config
 	dstr_copy(&stream->path, "rtmp://localhost:1935/live");
 	dstr_copy(&stream->key, "");
 	dstr_copy(&stream->username, "");
@@ -1265,9 +1287,7 @@ static void drop_frames(struct rtmp_stream *stream, const char *name,
 
 		} else {
 			num_frames_dropped++;
-#if OBS
 			obs_encoder_packet_release(&packet);
-#endif
 		}
 	}
 
@@ -1507,6 +1527,10 @@ void rtmp_stream_data(void *data, struct encoder_packet *packet)
 		blog(LOG_ERROR, "=== %s data(size=%d, dts=%d): %02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x\n",
 			packet->type == OBS_ENCODER_VIDEO ? "video" : "audio", packet->size, packet->dts,
 			p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+		//blog(LOG_ERROR,"=== %s,dts=%d, pts=%d, timebase_num=%d, timebase_den=%d, dts_usec=%d, sys_dts_usec=%d, track_idx=%d",
+		//	(packet->type == OBS_ENCODER_VIDEO) ? "video" : "audio",
+		//	packet->dts, packet->pts, packet->timebase_num, packet->timebase_den,
+		//	packet->dts_usec, packet->sys_dts_usec, packet->track_idx);
 	}
 
 	if (packet->type == OBS_ENCODER_VIDEO) {
@@ -1533,10 +1557,8 @@ void rtmp_stream_data(void *data, struct encoder_packet *packet)
 
 	if (added_packet)
 		os_sem_post(stream->send_sem);
-#if OBS
 	else
 		obs_encoder_packet_release(&new_packet);
-#endif
 }
 
 #if OBS

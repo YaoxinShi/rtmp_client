@@ -69,14 +69,15 @@ static bool build_flv_meta_data(/*obs_output_t *context,*/ uint8_t **output,
 	//obs_encoder_t *aencoder = obs_output_get_audio_encoder(context, a_idx);
 	//video_t *video = obs_encoder_video(vencoder);
 	//audio_t *audio = obs_encoder_audio(aencoder);
-	double video_fps = 30.0;
-	double video_bps = 2500.0;
-	double video_width = 1920.0;
-	double video_height = 1080.0;
+	//todo: remove hardcode: audio video config
+	int video_fps = 30;
+	int video_bps = 2500;
+	int video_width = 1920;
+	int video_height = 1080;
 
-	double audio_channel = 2.0;
-	double audio_bps = 160.0;
-	double audio_sample = 44100.0;
+	int audio_channel = 2;
+	int audio_bps = 160;
+	int audio_sample = 44100;
 
 	char buf[4096];
 	char *enc = buf;
@@ -96,24 +97,24 @@ static bool build_flv_meta_data(/*obs_output_t *context,*/ uint8_t **output,
 
 	if (a_idx == 0) {
 		enc_num_val(&enc, end, "width",
-			    video_width /*(double)obs_encoder_get_width(vencoder)*/);
+			    (double)video_width /*(double)obs_encoder_get_width(vencoder)*/);
 		enc_num_val(&enc, end, "height",
-			    video_height /*(double)obs_encoder_get_height(vencoder)*/);
+			    (double)video_height /*(double)obs_encoder_get_height(vencoder)*/);
 
 		enc_str_val(&enc, end, "videocodecid", "avc1");
 		enc_num_val(&enc, end, "videodatarate",
-			    video_bps /*encoder_bitrate(vencoder)*/);
+			    (double)video_bps /*encoder_bitrate(vencoder)*/);
 		enc_num_val(&enc, end, "framerate",
-			    video_fps /*video_output_get_frame_rate(video)*/);
+			    (double)video_fps /*video_output_get_frame_rate(video)*/);
 	}
 
 	enc_str_val(&enc, end, "audiocodecid", "mp4a");
-	enc_num_val(&enc, end, "audiodatarate", audio_bps /*encoder_bitrate(aencoder)*/);
+	enc_num_val(&enc, end, "audiodatarate", (double)audio_bps /*encoder_bitrate(aencoder)*/);
 	enc_num_val(&enc, end, "audiosamplerate",
-		    audio_sample /*(double)obs_encoder_get_sample_rate(aencoder)*/);
+		    (double)audio_sample /*(double)obs_encoder_get_sample_rate(aencoder)*/);
 	enc_num_val(&enc, end, "audiosamplesize", 16.0);
 	enc_num_val(&enc, end, "audiochannels",
-		    audio_channel /*(double)audio_output_get_channels(audio)*/);
+		    (double)audio_channel /*(double)audio_output_get_channels(audio)*/);
 
 	enc_bool_val(&enc, end, "stereo",
 		     audio_channel /*audio_output_get_channels(audio)*/ == 2);
