@@ -152,6 +152,7 @@ void obs_parse_avc_packet(struct encoder_packet *avc_packet,
 	avc_packet->data = output.bytes.array + sizeof(ref);
 	avc_packet->size = output.bytes.num - sizeof(ref);
 	avc_packet->drop_priority = get_drop_priority(avc_packet->priority);
+	//blog(LOG_ERROR, "=== alloc (%p, size=%d)", avc_packet->data, avc_packet->size);
 }
 
 static inline bool has_start_code(const uint8_t *data)
@@ -210,6 +211,31 @@ size_t obs_parse_avc_header(uint8_t **header, const uint8_t *data, size_t size)
 	}
 
 	get_sps_pps(data, size, &sps, &sps_size, &pps, &pps_size);
+	if (!sps || !pps || sps_size < 4)
+		return 0;
+
+	s_w8(&s, 0x01);
+	s_write(&s, sps + 1, 3);
+	s_w8(&s, 0xff);
+	s_w8(&s, 0xe1);
+
+	s_wb16(&s, (uint16_t)sps_size);
+	s_write(&s, sps, sps_size);
+	s_w8(&s, 0x01);
+	s_wb16(&s, (uint16_t)pps_size);
+	s_write(&s, pps, pps_size);
+
+	*header = output.bytes.array;
+	return output.bytes.num;
+}
+
+size_t obs_parse_avc_header2(uint8_t **header, const uint8_t *sps, size_t sps_size, const uint8_t *pps, size_t pps_size)
+{
+	struct array_output_data output;
+	struct serializer s;
+
+	array_output_serializer_init(&s, &output);
+
 	if (!sps || !pps || sps_size < 4)
 		return 0;
 

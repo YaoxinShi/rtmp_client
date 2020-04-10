@@ -47,6 +47,7 @@ EXPORT void obs_parse_avc_packet(struct encoder_packet *avc_packet,
 				 const struct encoder_packet *src);
 EXPORT size_t obs_parse_avc_header(uint8_t **header, const uint8_t *data,
 				   size_t size);
+EXPORT size_t obs_parse_avc_header2(uint8_t **header, const uint8_t *sps, size_t sps_size, const uint8_t *pps, size_t pps_size);
 EXPORT void obs_extract_avc_headers(const uint8_t *packet, size_t size,
 				    uint8_t **new_packet_data,
 				    size_t *new_packet_size,

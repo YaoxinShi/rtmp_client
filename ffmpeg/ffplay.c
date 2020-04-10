@@ -445,6 +445,20 @@ void convert_packet(AVPacket* in, AVRational timebase, bool isVideo, struct enco
             curr_pos[1] = 0x00;
             curr_pos[2] = 0x00;
             curr_pos[3] = 0x01;
+
+            //save sps
+            if ((curr_pos[4] & 0x1f) == 7)
+            {
+                pStream->sps_size = size;
+                memcpy(&pStream->sps[0], &curr_pos[4], pStream->sps_size);
+            }
+            //save pps
+            if ((curr_pos[4] & 0x1f) == 8)
+            {
+                pStream->pps_size = size;
+                memcpy(&pStream->pps[0], &curr_pos[4], pStream->pps_size);
+            }
+
             curr_pos += (size + 4);
         }
     }

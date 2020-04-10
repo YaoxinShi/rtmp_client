@@ -58,6 +58,7 @@ void obs_encoder_packet_create_instance(struct encoder_packet *dst,
 	dst->size = size;
 	*p_refs = 1;
 	memcpy(dst->data, data, size);
+	//blog(LOG_ERROR, "=== alloc (%p, size=%d)", dst->data, dst->size);
 }
 
 void obs_encoder_packet_ref(struct encoder_packet *dst,
@@ -72,6 +73,7 @@ void obs_encoder_packet_ref(struct encoder_packet *dst,
 	}
 
 	*dst = *src;
+	//blog(LOG_ERROR, "=== reference (%p, size=%d)", dst->data, dst->size);
 }
 
 void obs_encoder_packet_release(struct encoder_packet *pkt)
@@ -84,6 +86,7 @@ void obs_encoder_packet_release(struct encoder_packet *pkt)
 		if (os_atomic_dec_long(p_refs) == 0)
 			bfree(p_refs);
 	}
+	//blog(LOG_ERROR, "=== free (%p, size=%d)", pkt->data, pkt->size);
 
 	memset(pkt, 0, sizeof(struct encoder_packet));
 }
@@ -783,6 +786,8 @@ static bool send_video_header(struct rtmp_stream *stream)
 #if OBS
 	obs_encoder_get_extra_data(vencoder, &header, &size);
 	packet.size = obs_parse_avc_header(&packet.data, header, size);
+#else
+	packet.size = obs_parse_avc_header2(&packet.data, stream->sps, stream->sps_size, stream->pps, stream->pps_size);
 #endif
 	return send_packet(stream, &packet, true, 0) >= 0;
 }
@@ -1179,6 +1184,17 @@ static bool init_connect(struct rtmp_stream *stream)
 #else
 	drop_p = 900;
 	drop_b = 700;
+	stream->max_shutdown_time_sec = 30;// (int)obs_data_get_int(settings, OPT_MAX_SHUTDOWN_TIME_SEC);
+
+	circlebuf_free(&stream->dbr_frames);
+	stream->audio_bitrate = 160;// (long)obs_data_get_int(asettings, "bitrate");
+	stream->dbr_data_size = 0;
+	stream->dbr_orig_bitrate = 2500;// (long)obs_data_get_int(vsettings, "bitrate");
+	stream->dbr_cur_bitrate = stream->dbr_orig_bitrate;
+	stream->dbr_est_bitrate = 0;
+	stream->dbr_inc_bitrate = stream->dbr_orig_bitrate / 10;
+	stream->dbr_inc_timeout = 0;
+	stream->dbr_enabled = false;// obs_data_get_bool(settings, OPT_DYN_BITRATE);
 #endif
 
 	if (drop_p < (drop_b + 200))
@@ -1197,6 +1213,14 @@ static bool init_connect(struct rtmp_stream *stream)
 		obs_data_get_bool(settings, OPT_LOWLATENCY_ENABLED);
 
 	obs_data_release(settings);
+#else
+	bind_ip = "default";// obs_data_get_string(settings, OPT_BIND_IP);
+	dstr_copy(&stream->bind_ip, bind_ip);
+
+	stream->new_socket_loop =
+		false;// obs_data_get_bool(settings, OPT_NEWSOCKETLOOP_ENABLED);
+	stream->low_latency_mode =
+		false;// obs_data_get_bool(settings, OPT_LOWLATENCY_ENABLED);
 #endif
 	return true;
 }
@@ -1523,10 +1547,10 @@ void rtmp_stream_data(void *data, struct encoder_packet *packet)
 	}
 
 	{
-		unsigned char* p = (unsigned char*)packet->data;
-		blog(LOG_ERROR, "=== %s data(size=%d, dts=%d): %02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x\n",
-			packet->type == OBS_ENCODER_VIDEO ? "video" : "audio", packet->size, packet->dts,
-			p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
+		//unsigned char* p = (unsigned char*)packet->data;
+		//blog(LOG_ERROR, "=== %s data(size=%d, dts=%d): %02x,%02x,%02x,%02x,%02x,%02x,%02x,%02x\n",
+		//	packet->type == OBS_ENCODER_VIDEO ? "video" : "audio", packet->size, packet->dts,
+		//	p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
 		//blog(LOG_ERROR,"=== %s,dts=%d, pts=%d, timebase_num=%d, timebase_den=%d, dts_usec=%d, sys_dts_usec=%d, track_idx=%d",
 		//	(packet->type == OBS_ENCODER_VIDEO) ? "video" : "audio",
 		//	packet->dts, packet->pts, packet->timebase_num, packet->timebase_den,
@@ -1541,6 +1565,7 @@ void rtmp_stream_data(void *data, struct encoder_packet *packet)
 		}
 
 		obs_parse_avc_packet(&new_packet, packet);
+		obs_encoder_packet_release(packet);
 	} else {
 		obs_encoder_packet_ref(&new_packet, packet);
 	}

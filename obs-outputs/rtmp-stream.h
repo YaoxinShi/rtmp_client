@@ -131,6 +131,11 @@ struct rtmp_stream {
 	os_event_t *buffer_has_data_event;
 	os_event_t *socket_available_event;
 	os_event_t *send_thread_signaled_exit;
+
+	unsigned char sps[1024];
+	unsigned char pps[1024];
+	int sps_size;
+	int pps_size;
 };
 
 #ifdef _WIN32
