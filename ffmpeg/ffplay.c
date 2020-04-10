@@ -482,7 +482,7 @@ void convert_packet(AVPacket* in, AVRational timebase, bool isVideo, struct enco
     // So, obs_dts = ffmpeg_dts * (ffmpeg_timebase.num/ffmpeg_timebase.den) / (obs_timebase.num/obs_timebase.den)
     out->dts = in->dts * timebase.num * out->timebase_den / timebase.den / out->timebase_num; 
     out->pts = in->pts * timebase.num * out->timebase_den / timebase.den / out->timebase_num; 
-    out->dts_usec = out->dts * 1000000 / out->timebase_den;
+    out->dts_usec = out->dts * 1000000 * out->timebase_num / out->timebase_den;
 
     out->drop_priority = 0; //not used
     out->keyframe = 0; //set later based on nal_unit_type
