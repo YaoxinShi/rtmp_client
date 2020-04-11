@@ -490,6 +490,7 @@ static int send_packet(struct rtmp_stream *stream,
 #endif
 
 	ret = RTMP_Write(&stream->rtmp, (char *)data, (int)size, (int)idx);
+	//add code here to dump the data send to RTMP server
 	bfree(data);
 
 	if (is_header)
@@ -730,6 +731,7 @@ static bool send_meta_data(struct rtmp_stream *stream, size_t idx, bool *next)
 	if (*next) {
 		success = RTMP_Write(&stream->rtmp, (char *)meta_data,
 				     (int)meta_data_size, (int)idx) >= 0;
+		//add code here to dump the data send to RTMP server
 		bfree(meta_data);
 	}
 
