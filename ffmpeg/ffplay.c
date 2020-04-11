@@ -408,9 +408,19 @@ static int opt_add_vfilter(void *optctx, const char *opt, const char *arg)
 }
 #endif
 
+#define FIX_LOOP_PLAYBACK 1
+
 static inline
+#if FIX_LOOP_PLAYBACK
+void convert_packet(AVPacket* in, AVRational timebase, int64_t duration_accumulate_in_us, bool isVideo, struct encoder_packet * out)
+#else
 void convert_packet(AVPacket* in, AVRational timebase, bool isVideo, struct encoder_packet * out)
+#endif
 {
+#if FIX_LOOP_PLAYBACK
+    int64_t dts_delta = 0;
+#endif
+
     if ((in == NULL) || (out == NULL))
         return;
 
@@ -480,8 +490,18 @@ void convert_packet(AVPacket* in, AVRational timebase, bool isVideo, struct enco
     // In ffmpeg, dts is in unit of (ic->streams[x]->time_base.Numerator / ic->streams[x]->time_base.Denominator) seconds
     // In OBS, dts is in unit of (1/fps) seconds
     // So, obs_dts = ffmpeg_dts * (ffmpeg_timebase.num/ffmpeg_timebase.den) / (obs_timebase.num/obs_timebase.den)
+#if FIX_LOOP_PLAYBACK
+    // fix dts for loop
+    // dts is in unit of timebase.num/timebase.den second
+    // so we need change duration_accumulate_in_ms into the same unit as dts
+    // this means: (duration_accumulate_in_us / 1000000) / (timebase.num/timebase.den)
+    dts_delta = duration_accumulate_in_us * timebase.den / timebase.num / 1000000;
+    out->dts = (in->dts + dts_delta) * timebase.num * out->timebase_den / timebase.den / out->timebase_num;
+    out->pts = (in->pts + dts_delta) * timebase.num * out->timebase_den / timebase.den / out->timebase_num;
+#else
     out->dts = in->dts * timebase.num * out->timebase_den / timebase.den / out->timebase_num; 
     out->pts = in->pts * timebase.num * out->timebase_den / timebase.den / out->timebase_num; 
+#endif
     out->dts_usec = out->dts * 1000000 * out->timebase_num / out->timebase_den;
 
     out->drop_priority = 0; //not used
@@ -2839,6 +2859,9 @@ static int read_thread(void *arg)
     SDL_mutex *wait_mutex = SDL_CreateMutex();
     int scan_all_pmts_set = 0;
     int64_t pkt_ts;
+#if FIX_LOOP_PLAYBACK
+    int loop_times = 0;
+#endif
 
     if (!wait_mutex) {
         av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
@@ -3087,6 +3110,9 @@ static int read_thread(void *arg)
             (!is->video_st || (is->viddec.finished == is->videoq.serial && frame_queue_nb_remaining(&is->pictq) == 0))) {
             if (loop != 1 && (!loop || --loop)) {
                 stream_seek(is, start_time != AV_NOPTS_VALUE ? start_time : 0, 0, 0);
+#if FIX_LOOP_PLAYBACK
+                loop_times++;
+#endif
             } else if (autoexit) {
                 ret = AVERROR_EOF;
                 goto fail;
@@ -3123,13 +3149,21 @@ static int read_thread(void *arg)
         if (pkt->stream_index == is->audio_stream && pkt_in_play_range) {
             packet_queue_put(&is->audioq, pkt);
             //get a audio packet
+#if FIX_LOOP_PLAYBACK
+            convert_packet(pkt, ic->streams[pkt->stream_index]->time_base, ic->duration * loop_times, false, &one_packet[0]);
+#else
             convert_packet(pkt, ic->streams[pkt->stream_index]->time_base, false, &one_packet[0]);
+#endif
             rtmp_stream_data(pStream, &one_packet[0]);
         } else if (pkt->stream_index == is->video_stream && pkt_in_play_range
                    && !(is->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
             packet_queue_put(&is->videoq, pkt, true);
             //get a video packet
+#if FIX_LOOP_PLAYBACK
+            convert_packet(pkt, ic->streams[pkt->stream_index]->time_base, ic->duration * loop_times, true, &one_packet[1]);
+#else
             convert_packet(pkt, ic->streams[pkt->stream_index]->time_base, true, &one_packet[1]);
+#endif
             rtmp_stream_data(pStream, &one_packet[1]);
         } else if (pkt->stream_index == is->subtitle_stream && pkt_in_play_range) {
             packet_queue_put(&is->subtitleq, pkt);
